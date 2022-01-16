@@ -1,22 +1,32 @@
-const express = require("express")
-const Owner = require("../models/owner.models")
-const auth = require("../middleware/auth")
+const express = require("express");
+const Owner = require("../models/owner.models");
+const auth = require("../middlewares/auth");
 
-const ownerRouter = new express.Router()
+const ownerRouter = new express.Router();
 
-ownerRouter.post("/owner", auth, async (req, res) => {
+ownerRouter.post("/owner/register", async (req, res) => {
+  const owner = new Owner(req.body);
 
-    const owner = new Owner(req.body)
+  try {
+    await owner.save();
+    res.send({ status: "success" });
+  } catch (e) {
+    res.status(400).send(e);
+  }
+});
 
-    try {
+ownerRouter.post("/owner/login", async (req, res) => {
+  try {
+    const owner = await Owner.findByCredentials(
+      req.body.email,
+      req.body.password
+    );
+    const token = await owner.generateAuthToken();
+    res.send({ token });
+  } catch (e) {
+    console.log(e);
+    res.status(400).send(e);
+  }
+});
 
-        await owner.save()
-        res.send({owner})
-
-    } catch (e) {
-        res.status(400).send(e)
-    }
-
-})
-
-module.exports = ownerRouter
+module.exports = ownerRouter;
