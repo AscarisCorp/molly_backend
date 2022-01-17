@@ -1,6 +1,5 @@
 const express = require("express");
 const Owner = require("../models/owner.models");
-const auth = require("../middlewares/auth");
 
 const ownerRouter = new express.Router();
 
